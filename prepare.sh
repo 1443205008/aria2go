@@ -39,9 +39,10 @@ SSH2=https://www.libssh2.org/download/libssh2-${SSH2_V}.tar.gz
 ARIA2=https://github.com/aria2/aria2/releases/download/release-${ARIA2_V}/aria2-${ARIA2_V}.tar.bz2
 
 ## Config
-BUILD_DIRECTORY=/tmp/
+BUILD_DIRECTORY=./tmp/
 
 ## Build
+mkdir tmp
 cd ${BUILD_DIRECTORY}
 
 # zlib build
