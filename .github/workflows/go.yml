@@ -1,0 +1,42 @@
+name: Go
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.17
+
+    - name: Build
+      run: |
+        sudo apt install wget git build-essential -y
+        ./prepare.sh
+        cd ./example/aria2goc
+        go build -ldflags '-s -w --extldflags "-static -fpic"' -o hello main.go
+        strip -s hello
+        cp hello ../../
+
+    - name: zip
+      run: zip -q -r ubuntu.zip hello*
+      
+    - name: Set Release Name
+      run: |
+        echo "TIME=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+        echo "HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+        
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: AutoBuild-${{ env.TIME }}-${{ env.HASH }}
+        files: ubuntu.zip
